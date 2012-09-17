@@ -7,6 +7,7 @@ using System.Threading;
 using Common;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
+using Microsoft.WindowsAzure.Diagnostics.Management;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -77,8 +78,20 @@ namespace Worker
             _queue = client.GetQueueReference(QueueName);
             _queue.CreateIfNotExist();
 
-            //TODO set diagnostics
-            
+            // set diagnostics
+            var config = DiagnosticMonitor.GetDefaultInitialConfiguration();
+
+            // Windows Azure logs
+            config.Logs.ScheduledTransferPeriod = TimeSpan.FromMinutes(1.0);    //60 sec is min
+            config.Logs.ScheduledTransferLogLevelFilter = LogLevel.Undefined;    //Undefined == everything
+
+            var diagAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"));
+
+            var roleInstanceDiagnosticManager =
+                diagAccount.CreateRoleInstanceDiagnosticManager(RoleEnvironment.DeploymentId,
+                                                                   RoleEnvironment.CurrentRoleInstance.Role.Name,
+                                                                   RoleEnvironment.CurrentRoleInstance.Id);
+            roleInstanceDiagnosticManager.SetCurrentConfiguration(config);
             
             _isStopped = false;
             return base.OnStart();

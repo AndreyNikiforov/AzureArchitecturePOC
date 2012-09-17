@@ -15,6 +15,7 @@
     </Imports>
     <ConfigurationSettings>
       <Setting name="CloudStorage.ConnectionString" />
+      <Setting name="SqlStore.ConnextionString" />
     </ConfigurationSettings>
   </WorkerRole>
 </ServiceDefinition>

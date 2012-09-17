@@ -17,3 +17,5 @@ Reports
 *.ncrunchproject
 *.ncrunchsolution
 *.cache
+csx
+packages

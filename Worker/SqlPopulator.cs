@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -82,9 +83,16 @@ select t0.num + t1.num * 1000 as num
 from
 	thnd t0
 	cross join thnd t1
+),
+hthnds as (
+select t0.num + d0.digit * 1000 + d1.digit * 10000 as num
+from
+	thnd t0
+	cross join digits d0
+	cross join digits d1
 )
-MERGE INTO DataLoad Target
-USING (select mln.num + @startFrom as num from tmln) Source
+MERGE INTO DataLoads Target
+USING (select num + @startFrom as num from hthnds) Source
 ON Target.id = Source.Num
 WHEN NOT MATCHED THEN INSERT (
 	Id
@@ -93,7 +101,7 @@ WHEN NOT MATCHED THEN INSERT (
 	source.num
 	, @LoremIpsum
 );	
-", startFrom, loremIpsum);
+", new SqlParameter("@startFrom", startFrom), new SqlParameter("@loremIpsum", loremIpsum));
             return stopWatch.Elapsed;
         }
     }

@@ -12,6 +12,12 @@ namespace Worker.SqlData
 
         public SqlStorageContext(string connextionString) : base(connextionString) {}
 
+        //required for migrations
+        public SqlStorageContext() :base()
+        {
+            
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

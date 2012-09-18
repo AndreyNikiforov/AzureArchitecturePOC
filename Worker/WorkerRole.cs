@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -10,6 +11,7 @@ using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.Diagnostics.Management;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.StorageClient;
+using Worker.SqlData;
 
 namespace Worker
 {
@@ -39,7 +41,13 @@ namespace Worker
 
                         // simple selector
                         if (msg is PopulateSqlMessage)
-                            new SqlPopulator().Run(((PopulateSqlMessage)msg).StartFrom);
+                        {
+                            var typedMsg = ((PopulateSqlMessage) msg);
+                            var elapsed = new SqlPopulator().Run(typedMsg.StartFrom);
+                            Trace.TraceInformation("--------------- Msg for {0} completed in {1}", typedMsg.StartFrom, elapsed);
+                        }
+                        else
+                            Trace.TraceError("Received message of unsupported type {0}", msg.GetType().FullName);
 
                         _queue.DeleteMessage(receivedMessage);
                     }
@@ -68,6 +76,9 @@ namespace Worker
 
         public override bool OnStart()
         {
+            //EF stuff -- do not initialize db
+            Database.SetInitializer<SqlStorageContext>(null);
+
             // Set the maximum number of concurrent connections  -- do we need this??
             //ServicePointManager.DefaultConnectionLimit = 12;
 

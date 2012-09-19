@@ -49,7 +49,7 @@ namespace Worker
                         else if (msg is PopulateSqlLoremIpsumMessage)
                         {
                             var typedMsg = ((PopulateSqlLoremIpsumMessage)msg);
-                            var elapsed = new SqlPopulator().PopulateLoremIpsum(typedMsg.LoremIpsumBlobSize);
+                            var elapsed = new SqlPopulator().PopulateLoremIpsum(typedMsg.LoremIpsumBlobSize, typedMsg.StartFrom);
                             Trace.TraceInformation("--------------- Msg for LoremIpsum({0}) completed in {1}", typedMsg.LoremIpsumBlobSize, elapsed);
                         }
                         else if (msg is PopulateSqlBuildPK)

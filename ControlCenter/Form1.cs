@@ -73,13 +73,16 @@ namespace ControlCenter
             var queue = client.GetQueueReference(QueueName);
             queue.CreateIfNotExist();
 
+            //create multiple batches
+            for (var batch = 0; batch < 1000; batch++)
                 queue.AddMessage(
                     new CloudQueueMessage(
                         MessageBase.Serialize(
                             new PopulateSqlLoremIpsumMessage()
-                            {
-                                LoremIpsumBlobSize = 1000
-                            }))
+                                {
+                                    LoremIpsumBlobSize = 1000,
+                                    StartFrom = batch*10000 //each batch is a hundred thousands
+                                }))
                     );
 
             button3.Enabled = true;

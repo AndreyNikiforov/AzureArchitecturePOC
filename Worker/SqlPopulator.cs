@@ -45,7 +45,7 @@ insert INTO DataLoads
 ", new SqlParameter("@startFrom", startFrom));
             return stopWatch.Elapsed;
         }
-        public TimeSpan PopulateLoremIpsum(int loremIpsumBlobSize = 0)
+        public TimeSpan PopulateLoremIpsum(int loremIpsumBlobSize, int startFrom)
         {
             //gerenerate lorem ipsum text
             var loremIpsum =
@@ -61,8 +61,9 @@ insert INTO DataLoads
             _context.Database.ExecuteSqlCommand(
 @"
 Update DataLoads 
-	LoremIpsum = @loremIpsum;	
-", new SqlParameter("@loremIpsum", loremIpsum));
+SET LoremIpsum = @loremIpsum
+where id in (select id from DataLoads with (nolock) where id between @startFrom and @startFrom + 10000);
+", new SqlParameter("@loremIpsum", loremIpsum), new SqlParameter("@startFrom", startFrom));
             return stopWatch.Elapsed;
         }
         public TimeSpan BuildPK(int loremIpsumBlobSize = 0)

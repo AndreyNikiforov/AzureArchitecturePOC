@@ -12,5 +12,10 @@ namespace Common
         /// </summary>
         public int LoremIpsumBlobSize;
 
+        /// <summary>
+        /// Number that this batch should start from
+        /// </summary>
+        public int StartFrom;
+
     }
 }

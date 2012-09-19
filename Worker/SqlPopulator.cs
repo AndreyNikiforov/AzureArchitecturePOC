@@ -24,7 +24,7 @@ namespace Worker
         /// <summary>
         /// ctor to use when DI is not available
         /// </summary>
-        public SqlPopulator() : this(new SqlStorageContext(CloudConfigurationManager.GetSetting("SqlStore.ConnextionString")))
+        public SqlPopulator() : this(new SqlStorageContext(CloudConfigurationManager.GetSetting("SqlStore.ConnectionString")))
         {
         }
 
@@ -34,74 +34,42 @@ namespace Worker
         /// <param name="startFrom">id to start from</param>
         public TimeSpan Run(int startFrom = 0)
         {
-            //gerenerate lorem ipsum text
-            var loremIpsum =
-                Enumerable.Repeat("Blah", 1000)
-                    .Aggregate(
-                        new StringBuilder(),
-                        (sb, s) =>
-                            {
-                                sb.Append(s);
-                                return sb;
-                            }, sb => sb.ToString());
             var stopWatch = Stopwatch.StartNew();
             _context.Database.ExecuteSqlCommand(
 @"
---populate data
-with 
-digits as (
-select 0 as digit
-union all 
-select 1 as digit
-union all 
-select 2 as digit
-union all
-select 3 as digit
-union all
-select 4 as digit
-union all
-select 5 as digit
-union all
-select 6 as digit
-union all
-select 7 as digit
-union all
-select 8 as digit
-union all
-select 9 as digit
-),
-thnd as (
-select 
-	d0.digit + d1.digit * 10 + d2.digit * 100 as num
-from
-	digits d0
-	cross join digits d1
-	cross join digits d2
-),
-mln as (
-select t0.num + t1.num * 1000 as num
-from
-	thnd t0
-	cross join thnd t1
-),
-hthnds as (
-select t0.num + d0.digit * 1000 + d1.digit * 10000 as num
-from
-	thnd t0
-	cross join digits d0
-	cross join digits d1
-)
-MERGE INTO DataLoads Target
-USING (select num + @startFrom as num from hthnds) Source
-ON Target.id = Source.Num
-WHEN NOT MATCHED THEN INSERT (
+insert INTO DataLoads 
+(
 	Id
-	, LoremIpsum
-) VALUES (
-	source.num
-	, @LoremIpsum
-);	
-", new SqlParameter("@startFrom", startFrom), new SqlParameter("@loremIpsum", loremIpsum));
+)
+(select id + @startFrom as num from Ids);	
+", new SqlParameter("@startFrom", startFrom));
+            return stopWatch.Elapsed;
+        }
+        public TimeSpan PopulateLoremIpsum(int loremIpsumBlobSize = 0)
+        {
+            //gerenerate lorem ipsum text
+            var loremIpsum =
+                Enumerable.Repeat("Blah", loremIpsumBlobSize/4)
+                    .Aggregate(
+                        new StringBuilder(),
+                        (sb, s) =>
+                        {
+                            sb.Append(s);
+                            return sb;
+                        }, sb => sb.ToString());
+            var stopWatch = Stopwatch.StartNew();
+            _context.Database.ExecuteSqlCommand(
+@"
+Update DataLoads 
+	LoremIpsum = @loremIpsum;	
+", new SqlParameter("@loremIpsum", loremIpsum));
+            return stopWatch.Elapsed;
+        }
+        public TimeSpan BuildPK(int loremIpsumBlobSize = 0)
+        {
+            var stopWatch = Stopwatch.StartNew();
+            _context.Database.ExecuteSqlCommand(
+@"ALTER TABLE DataLoads ADD CONSTRAINT [PK_DataLoads] PRIMARY KEY NONCLUSTERED ([Id] ASC);");
             return stopWatch.Elapsed;
         }
     }

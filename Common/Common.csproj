@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PopulateSqlBuildPK.cs" />
+    <Compile Include="PopulateSqlLoremIpsumMessage.cs" />
     <Compile Include="MessageBase.cs" />
     <Compile Include="PopulateSqlMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

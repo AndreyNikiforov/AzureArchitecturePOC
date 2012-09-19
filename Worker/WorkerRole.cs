@@ -46,6 +46,17 @@ namespace Worker
                             var elapsed = new SqlPopulator().Run(typedMsg.StartFrom);
                             Trace.TraceInformation("--------------- Msg for {0} completed in {1}", typedMsg.StartFrom, elapsed);
                         }
+                        else if (msg is PopulateSqlLoremIpsumMessage)
+                        {
+                            var typedMsg = ((PopulateSqlLoremIpsumMessage)msg);
+                            var elapsed = new SqlPopulator().PopulateLoremIpsum(typedMsg.LoremIpsumBlobSize);
+                            Trace.TraceInformation("--------------- Msg for LoremIpsum({0}) completed in {1}", typedMsg.LoremIpsumBlobSize, elapsed);
+                        }
+                        else if (msg is PopulateSqlBuildPK)
+                        {
+                            var elapsed = new SqlPopulator().BuildPK();
+                            Trace.TraceInformation("--------------- Msg for BuildPK completed in {0}", elapsed);
+                        }
                         else
                             Trace.TraceError("Received message of unsupported type {0}", msg.GetType().FullName);
 

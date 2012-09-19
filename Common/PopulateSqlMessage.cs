@@ -15,9 +15,5 @@ namespace Common
         /// </summary>
         public int StartFrom;
 
-        /// <summary>
-        /// This is the size of the field used to fill up database (pump the size, to reduce chances of sql server caching)
-        /// </summary>
-        public int LoremIpsumBlobSize;
     }
 }

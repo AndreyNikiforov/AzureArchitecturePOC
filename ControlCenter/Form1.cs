@@ -26,6 +26,7 @@ namespace ControlCenter
 
         private void button1_Click(object sender, EventArgs e)
         {
+            button1.Enabled = false;
             //populates sql and cloud storages
             var connectionString = ConfigurationManager.AppSettings["CloudStorage.ConnectionString"];
             var account = CloudStorageAccount.Parse(connectionString);
@@ -45,10 +46,12 @@ namespace ControlCenter
                                 }))
                     );
             }
+            button1.Enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            button2.Enabled = false;
             //cleans the queue
             var connectionString = ConfigurationManager.AppSettings["CloudStorage.ConnectionString"];
             var account = CloudStorageAccount.Parse(connectionString);
@@ -56,6 +59,52 @@ namespace ControlCenter
             var queue = client.GetQueueReference(QueueName);
             queue.CreateIfNotExist();
             queue.Clear();
+            button2.Enabled = true;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            button3.Enabled = false;
+
+            //send a message to update data with LoremIpsum and create PK
+            var connectionString = ConfigurationManager.AppSettings["CloudStorage.ConnectionString"];
+            var account = CloudStorageAccount.Parse(connectionString);
+            var client = account.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(QueueName);
+            queue.CreateIfNotExist();
+
+                queue.AddMessage(
+                    new CloudQueueMessage(
+                        MessageBase.Serialize(
+                            new PopulateSqlLoremIpsumMessage()
+                            {
+                                LoremIpsumBlobSize = 1000
+                            }))
+                    );
+
+            button3.Enabled = true;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            button4.Enabled = false;
+
+            //send a message to update data with LoremIpsum and create PK
+            var connectionString = ConfigurationManager.AppSettings["CloudStorage.ConnectionString"];
+            var account = CloudStorageAccount.Parse(connectionString);
+            var client = account.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(QueueName);
+            queue.CreateIfNotExist();
+
+            queue.AddMessage(
+                new CloudQueueMessage(
+                    MessageBase.Serialize(
+                        new PopulateSqlBuildPK()
+                        ))
+                );
+
+            button4.Enabled = true;
+
         }
     }
 }

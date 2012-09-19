@@ -10,7 +10,7 @@ namespace Worker.SqlData
     {
         public DbSet<DataLoad> DataLoads { get; set; }
 
-        public SqlStorageContext(string connextionString) : base(connextionString) {}
+        public SqlStorageContext(string connectionString) : base(connectionString) {}
 
         //required for migrations
         public SqlStorageContext() :base()

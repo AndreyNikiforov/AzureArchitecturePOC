@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common
 {
-    public class PopulateSqlBuildPK : MessageBase
+    public class PopulateSqlBuildPKMessage : MessageBase
     {
     }
 }

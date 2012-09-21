@@ -102,11 +102,40 @@ namespace ControlCenter
             queue.AddMessage(
                 new CloudQueueMessage(
                     MessageBase.Serialize(
-                        new PopulateSqlBuildPK()
+                        new PopulateSqlBuildPKMessage()
                         ))
                 );
 
             button4.Enabled = true;
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            button5.Enabled = false;
+
+            //send a message to update data with LoremIpsum and create PK
+            var connectionString = ConfigurationManager.AppSettings["CloudStorage.ConnectionString"];
+            var account = CloudStorageAccount.Parse(connectionString);
+            var client = account.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(QueueName);
+            queue.CreateIfNotExist();
+
+            //create multiple batches
+            //break data into 1000 partition, each will be populated in 10 batches
+            for (var partition = 0; partition < 1000; partition++)
+                for (var batch = 0; batch < 10; batch++)
+                    queue.AddMessage(
+                    new CloudQueueMessage(
+                        MessageBase.Serialize(
+                            new PopulateCloudMessage()
+                            {
+                                Partition = partition,
+                                Batch = batch
+                            }))
+                    );
+
+            button5.Enabled = true;
 
         }
     }

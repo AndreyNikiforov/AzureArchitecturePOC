@@ -10,10 +10,5 @@ namespace Common
     /// </summary>
     public class PopulateSqlMessage : MessageBase
     {
-        /// <summary>
-        /// Number that this batch should start from
-        /// </summary>
-        public int StartFrom;
-
     }
 }

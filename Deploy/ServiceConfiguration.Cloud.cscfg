@@ -4,7 +4,7 @@
     <Instances count="5" />
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="CloudStorage.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="CloudStore.ConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="SqlStore.ConnectionString" value="Data Source=.;Initial Catalog=azurearchitecturepoc;Integrated Security=True;encrypt=true;TrustServerCertificate=true" />
     </ConfigurationSettings>
   </Role>

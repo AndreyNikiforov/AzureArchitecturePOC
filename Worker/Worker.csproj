@@ -66,6 +66,8 @@
   <ItemGroup>
     <Compile Include="CloudPopulator.cs" />
     <Compile Include="DataEntity.cs" />
+    <Compile Include="IMetricRecorder.cs" />
+    <Compile Include="MetricRecorder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlData\DataLoad.cs" />
     <Compile Include="SqlData\SqlStorageContext.cs" />

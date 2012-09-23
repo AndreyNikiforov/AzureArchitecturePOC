@@ -21,11 +21,11 @@ namespace Worker
         const string QueueName = "controlqueue";
 
         CloudQueue _queue;
-        bool _isStopped;
+        private CancellationTokenSource _cancel = new CancellationTokenSource();
 
         public override void Run()
         {
-            while (!_isStopped)
+            while (!_cancel.IsCancellationRequested)
             {
                 try
                 {
@@ -40,31 +40,32 @@ namespace Worker
                         var msg = MessageBase.Deserialize(receivedMessage.AsString);
 
                         // simple selector
-                        if (msg is PopulateSqlMessage)
+                        if (msg is CleanMessage)
                         {
-                            var typedMsg = ((PopulateSqlMessage) msg);
-                            var elapsed = new SqlPopulator().Run(typedMsg.StartFrom);
-                            Trace.TraceInformation("--------------- Msg for {0} completed in {1}", typedMsg.StartFrom, elapsed);
+                            var stopWatch = Stopwatch.StartNew();
+                            new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), "MetricTable").Reset();
+                            new SqlPopulator().Initialize();
+                            new CloudPopulator().Initialize();
+                            Trace.TraceInformation("--------------- CleanMessage completed in {0}", stopWatch.Elapsed);
+                        }
+                        else if (msg is PopulateSqlMessage)
+                        {
+                            ThreadPool.QueueUserWorkItem(delegate { new SqlPopulator().Popluate(_cancel.Token); });
+                            Trace.TraceInformation("--------------- PopulateSqlMessage requested");
                         }
                         else if (msg is PopulateSqlLoremIpsumMessage)
                         {
-                            var typedMsg = ((PopulateSqlLoremIpsumMessage)msg);
-                            var elapsed = new SqlPopulator().PopulateLoremIpsum(typedMsg.LoremIpsumBlobSize, typedMsg.StartFrom);
-                            Trace.TraceInformation("--------------- Msg for LoremIpsum({0}) completed in {1}", typedMsg.LoremIpsumBlobSize, elapsed);
-                        }
-                        else if (msg is PopulateSqlBuildPKMessage)
-                        {
-                            var elapsed = new SqlPopulator().BuildPK();
-                            Trace.TraceInformation("--------------- Msg for BuildPK completed in {0}", elapsed);
+                            ThreadPool.QueueUserWorkItem(delegate { new SqlPopulator().PopulateLoremIpsum(_cancel.Token); });
+                            Trace.TraceInformation("--------------- PopulateLoremIpsumMessage requested");
                         }
                         else if (msg is PopulateCloudMessage)
                         {
-                            var typedMsg = ((PopulateCloudMessage)msg);
-                            var elapsed = new CloudPopulator().Run(typedMsg.Partition, typedMsg.Batch);
-                            Trace.TraceInformation("--------------- Cloud Msg for partition {0}, batch {1} completed in {2}", typedMsg.Partition, typedMsg.Batch, elapsed);
+                            var typedMsg = (PopulateCloudMessage) msg;
+                            var elapsed = new CloudPopulator().Populate(_cancel.Token, typedMsg.Partition);
+                            Trace.TraceInformation("--------------- PopulateCloudMessage for partition {0} populated in {1}", typedMsg.Partition, elapsed);
                         }
                         else
-                            Trace.TraceError("Received message of unsupported type {0}", msg.GetType().FullName);
+                            Trace.TraceError("Received message of unsupported type {0}. Swallowing", msg.GetType().FullName);
 
                         _queue.DeleteMessage(receivedMessage);
                     }
@@ -74,7 +75,7 @@ namespace Worker
                     if (e.ExtendedErrorInformation != null 
                         && !e.ExtendedErrorInformation.ErrorCode.Equals(StorageErrorCodeStrings.InternalError))
                     {
-                        Trace.WriteLine(e.Message);
+                        Trace.TraceError(e.Message);
                         throw;
                     }
 
@@ -82,11 +83,16 @@ namespace Worker
                 }
                 catch (OperationCanceledException e)
                 {
-                    if (!_isStopped)
+                    if (!_cancel.IsCancellationRequested)
                     {
-                        Trace.WriteLine(e.Message);
+                        Trace.TraceError(e.Message);
                         throw;
                     }
+                }
+                catch (Exception e)
+                {
+                    Trace.TraceError(e.Message);
+                    throw;
                 }
             }
         }
@@ -100,7 +106,7 @@ namespace Worker
             //ServicePointManager.DefaultConnectionLimit = 12;
 
             // Create the queue if it does not exist already
-            var connectionString = CloudConfigurationManager.GetSetting("CloudStorage.ConnectionString");
+            var connectionString = CloudConfigurationManager.GetSetting("CloudStore.ConnectionString");
             var account = CloudStorageAccount.Parse(connectionString);
             var client = account.CreateCloudQueueClient();
             _queue = client.GetQueueReference(QueueName);
@@ -121,13 +127,12 @@ namespace Worker
                                                                    RoleEnvironment.CurrentRoleInstance.Id);
             roleInstanceDiagnosticManager.SetCurrentConfiguration(config);
             
-            _isStopped = false;
             return base.OnStart();
         }
 
         public override void OnStop()
         {
-            _isStopped = true;
+            _cancel.Cancel();
             base.OnStop();
         }
 

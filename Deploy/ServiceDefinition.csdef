@@ -5,7 +5,7 @@
       <Import moduleName="Diagnostics" />
     </Imports>
     <ConfigurationSettings>
-      <Setting name="CloudStorage.ConnectionString" />
+      <Setting name="CloudStore.ConnectionString" />
       <Setting name="SqlStore.ConnectionString" />
     </ConfigurationSettings>
   </WorkerRole>

@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CleanMessage.cs" />
     <Compile Include="PopulateCloudMessage.cs" />
-    <Compile Include="PopulateSqlBuildPKMessage.cs" />
     <Compile Include="PopulateSqlLoremIpsumMessage.cs" />
     <Compile Include="MessageBase.cs" />
     <Compile Include="PopulateSqlMessage.cs" />

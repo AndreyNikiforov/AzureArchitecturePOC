@@ -8,6 +8,5 @@ namespace Common
     public class PopulateCloudMessage : MessageBase
     {
         public int Partition { get; set; }
-        public int Batch { get; set; }
     }
 }

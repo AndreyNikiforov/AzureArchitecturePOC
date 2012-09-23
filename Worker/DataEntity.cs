@@ -6,19 +6,11 @@ namespace Worker
 {
     public class DataEntity : TableServiceEntity
     {
-        public DataEntity(int partition, int id, int loremIpsumBlobSize)
+        public DataEntity(int partition, int id, string loremIpsum)
         {
             this.PartitionKey = partition.ToString();
             this.RowKey = id.ToString();
-            LoremIpsum =
-                Enumerable.Repeat("Blah", loremIpsumBlobSize / 4)
-                    .Aggregate(
-                        new StringBuilder(),
-                        (sb, s) =>
-                            {
-                                sb.Append(s);
-                                return sb;
-                            }, sb => sb.ToString());
+            LoremIpsum = loremIpsum;
         }
 
         public DataEntity() { }

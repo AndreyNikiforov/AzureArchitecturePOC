@@ -42,9 +42,14 @@ namespace Worker
                         // simple selector
                         if (msg is CleanMessage)
                         {
+                            _queue.DeleteMessage(receivedMessage);
+                            receivedMessage = null;
                             var stopWatch = Stopwatch.StartNew();
+                            Trace.TraceInformation("--------------- CleanMessage starting...");
                             new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), "MetricTable").Reset();
+                            Trace.TraceInformation("--------------- CleanMessage/SqlPopulator.Initialize starting...");
                             new SqlPopulator().Initialize();
+                            Trace.TraceInformation("--------------- CleanMessage/CloudPopulator.Initialize starting...");
                             new CloudPopulator().Initialize();
                             Trace.TraceInformation("--------------- CleanMessage completed in {0}", stopWatch.Elapsed);
                         }

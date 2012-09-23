@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -23,7 +25,19 @@ namespace Worker
         public void Reset()
         {
             _client.DeleteTableIfExist(_tableName);
-            _client.CreateTable(_tableName);
+            while (true)
+                try
+                {
+                    _client.CreateTableIfNotExist(_tableName);
+                    break;
+                }
+                catch (StorageClientException e)
+                {
+                    //deleting make take 40sec (GC)
+                    if (e.StatusCode != HttpStatusCode.Conflict)
+                        throw;
+                    Thread.Sleep(1000);
+                }
         }
 
         public void Report(string action, string key, TimeSpan elapsed)

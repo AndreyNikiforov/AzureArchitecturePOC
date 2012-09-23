@@ -66,9 +66,13 @@ namespace Worker
                         }
                         else if (msg is PopulateCloudMessage)
                         {
-                            var typedMsg = (PopulateCloudMessage) msg;
-                            var elapsed = new CloudPopulator().Populate(_cancel.Token, typedMsg.Partition);
-                            Trace.TraceInformation("--------------- PopulateCloudMessage for partition {0} populated in {1}", typedMsg.Partition, elapsed);
+                            _queue.DeleteMessage(receivedMessage);
+                            receivedMessage = null;
+                            var typedMsg = (PopulateCloudMessage)msg;
+                            Trace.TraceInformation("--------------- PopulateCloudMessage for partition {0} starting...", typedMsg.Partition);
+                            var stopWatch = Stopwatch.StartNew();
+                            new CloudPopulator().Populate(_cancel.Token, typedMsg.Partition);
+                            Trace.TraceInformation("--------------- PopulateCloudMessage for partition {0} completed in {1}", typedMsg.Partition, stopWatch.Elapsed);
                         }
                         else
                             Trace.TraceError("Received message of unsupported type {0}. Swallowing", msg.GetType().FullName);
@@ -86,6 +90,7 @@ namespace Worker
                         throw;
                     }
 
+                    Trace.TraceWarning("Internal storage error. Retrying after 10 sec");
                     Thread.Sleep(10000);    //pause and retry
                 }
                 catch (OperationCanceledException e)
@@ -95,6 +100,7 @@ namespace Worker
                         Trace.TraceError(e.Message);
                         throw;
                     }
+                    Trace.TraceInformation("Cancelled Exception swallowed.");
                 }
                 catch (Exception e)
                 {

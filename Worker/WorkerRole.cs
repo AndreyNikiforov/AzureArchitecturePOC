@@ -50,13 +50,14 @@ namespace Worker
                         }
                         else if (msg is PopulateSqlMessage)
                         {
-                            ThreadPool.QueueUserWorkItem(delegate { new SqlPopulator().Popluate(_cancel.Token); });
-                            Trace.TraceInformation("--------------- PopulateSqlMessage requested");
-                        }
-                        else if (msg is PopulateSqlLoremIpsumMessage)
-                        {
-                            ThreadPool.QueueUserWorkItem(delegate { new SqlPopulator().PopulateLoremIpsum(_cancel.Token); });
-                            Trace.TraceInformation("--------------- PopulateLoremIpsumMessage requested");
+                            _queue.DeleteMessage(receivedMessage);
+                            receivedMessage = null;
+                            Trace.TraceInformation("--------------- PopulateSqlMessage starting...");
+                            var populator = new SqlPopulator();
+                            populator.Popluate(_cancel.Token);
+                            Trace.TraceInformation("--------------- PopulateSqlMessage/LoremIpsum starting...");
+                            populator.PopulateLoremIpsum(_cancel.Token); 
+                            Trace.TraceInformation("--------------- PopulateSqlMessage completed");
                         }
                         else if (msg is PopulateCloudMessage)
                         {
@@ -67,7 +68,8 @@ namespace Worker
                         else
                             Trace.TraceError("Received message of unsupported type {0}. Swallowing", msg.GetType().FullName);
 
-                        _queue.DeleteMessage(receivedMessage);
+                        if (null != receivedMessage)
+                            _queue.DeleteMessage(receivedMessage);
                     }
                 }
                 catch (StorageException e)

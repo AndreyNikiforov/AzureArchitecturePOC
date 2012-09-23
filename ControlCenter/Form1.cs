@@ -57,28 +57,6 @@ namespace ControlCenter
             btnClearQueue.Enabled = true;
         }
 
-        private void btnPopulateSqlLoremIpsum_Click(object sender, EventArgs e)
-        {
-            btnPopulateSqlLoremIpsum.Enabled = false;
-
-            //send a message to update data with LoremIpsum and create PK
-            var connectionString = ConfigurationManager.AppSettings["CloudStore.ConnectionString"];
-            var account = CloudStorageAccount.Parse(connectionString);
-            var client = account.CreateCloudQueueClient();
-            var queue = client.GetQueueReference(QueueName);
-            queue.CreateIfNotExist();
-
-            //create multiple batches
-            queue.AddMessage(
-                new CloudQueueMessage(
-                    MessageBase.Serialize(
-                        new PopulateSqlLoremIpsumMessage()
-                        ))
-                );
-
-            btnPopulateSqlLoremIpsum.Enabled = true;
-        }
-
         private void btnPopulateCloud_Click(object sender, EventArgs e)
         {
             btnPopulateCloud.Enabled = false;

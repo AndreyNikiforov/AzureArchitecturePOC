@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="CleanMessage.cs" />
     <Compile Include="PopulateCloudMessage.cs" />
-    <Compile Include="PopulateSqlLoremIpsumMessage.cs" />
     <Compile Include="MessageBase.cs" />
     <Compile Include="PopulateSqlMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

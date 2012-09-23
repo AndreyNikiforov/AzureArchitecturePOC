@@ -30,7 +30,6 @@
         {
             this.btnPopulateSql = new System.Windows.Forms.Button();
             this.btnClearQueue = new System.Windows.Forms.Button();
-            this.btnPopulateSqlLoremIpsum = new System.Windows.Forms.Button();
             this.btnPopulateCloud = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -55,16 +54,6 @@
             this.btnClearQueue.UseVisualStyleBackColor = true;
             this.btnClearQueue.Click += new System.EventHandler(this.btnClearQueue_Click);
             // 
-            // btnPopulateSqlLoremIpsum
-            // 
-            this.btnPopulateSqlLoremIpsum.Location = new System.Drawing.Point(13, 71);
-            this.btnPopulateSqlLoremIpsum.Name = "btnPopulateSqlLoremIpsum";
-            this.btnPopulateSqlLoremIpsum.Size = new System.Drawing.Size(192, 23);
-            this.btnPopulateSqlLoremIpsum.TabIndex = 2;
-            this.btnPopulateSqlLoremIpsum.Text = "Request Sql LoremIpsum Population";
-            this.btnPopulateSqlLoremIpsum.UseVisualStyleBackColor = true;
-            this.btnPopulateSqlLoremIpsum.Click += new System.EventHandler(this.btnPopulateSqlLoremIpsum_Click);
-            // 
             // btnPopulateCloud
             // 
             this.btnPopulateCloud.Location = new System.Drawing.Point(220, 41);
@@ -75,7 +64,7 @@
             this.btnPopulateCloud.UseVisualStyleBackColor = true;
             this.btnPopulateCloud.Click += new System.EventHandler(this.btnPopulateCloud_Click);
             // 
-            // button1
+            // btnReset
             // 
             this.btnReset.Location = new System.Drawing.Point(220, 12);
             this.btnReset.Name = "btnReset";
@@ -92,7 +81,6 @@
             this.ClientSize = new System.Drawing.Size(488, 330);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.btnPopulateCloud);
-            this.Controls.Add(this.btnPopulateSqlLoremIpsum);
             this.Controls.Add(this.btnClearQueue);
             this.Controls.Add(this.btnPopulateSql);
             this.Name = "Form1";
@@ -105,7 +93,6 @@
 
         private System.Windows.Forms.Button btnPopulateSql;
         private System.Windows.Forms.Button btnClearQueue;
-        private System.Windows.Forms.Button btnPopulateSqlLoremIpsum;
         private System.Windows.Forms.Button btnPopulateCloud;
         private System.Windows.Forms.Button btnReset;
     }

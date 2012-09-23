@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Common;
 using Microsoft.WindowsAzure;
 using Worker.SqlData;
 
@@ -28,7 +29,7 @@ namespace Worker
         /// ctor to use when DI is not available
         /// </summary>
         public SqlPopulator()
-            : this(new SqlStorageContext(CloudConfigurationManager.GetSetting("SqlStore.ConnectionString")), new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), "MetricTable"))
+            : this(new SqlStorageContext(CloudConfigurationManager.GetSetting("SqlStore.ConnectionString")), new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), Settings.MetricTableName))
         {
         }
 

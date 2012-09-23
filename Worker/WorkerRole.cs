@@ -18,7 +18,7 @@ namespace Worker
     public class WorkerRole : RoleEntryPoint
     {
         // The name of your queue (has to be lowercase)
-        const string QueueName = "controlqueue";
+        const string QueueName = Settings.ControlQueueName;
 
         CloudQueue _queue;
         private CancellationTokenSource _cancel = new CancellationTokenSource();
@@ -46,7 +46,7 @@ namespace Worker
                             receivedMessage = null;
                             var stopWatch = Stopwatch.StartNew();
                             Trace.TraceInformation("--------------- CleanMessage starting...");
-                            new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), "MetricTable").Reset();
+                            new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), Settings.MetricTableName).Reset();
                             Trace.TraceInformation("--------------- CleanMessage/SqlPopulator.Initialize starting...");
                             new SqlPopulator().Initialize();
                             Trace.TraceInformation("--------------- CleanMessage/CloudPopulator.Initialize starting...");

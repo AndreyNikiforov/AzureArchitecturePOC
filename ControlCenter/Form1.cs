@@ -17,7 +17,7 @@ namespace ControlCenter
     {
 
         // The name of your queue (has to be lowercase)
-        const string QueueName = "controlqueue";
+        const string QueueName = Settings.ControlQueueName;
 
         public Form1()
         {
@@ -97,6 +97,20 @@ namespace ControlCenter
                         new CleanMessage()))
                 );
             btnReset.Enabled = true;
+        }
+
+        private void btnRefreshCounts_Click(object sender, EventArgs e)
+        {
+            btnRefreshCounts.Enabled = false;
+            var connectionString = ConfigurationManager.AppSettings["CloudStore.ConnectionString"];
+            var account = CloudStorageAccount.Parse(connectionString);
+            var client = account.CreateCloudTableClient();
+            var context = client.GetDataServiceContext();
+            txtPopulateSql.Text = context.CreateQuery<MetricEntity>(Settings.MetricTableName).Where(entity => entity.PartitionKey == "PopulateSql").AsTableServiceQuery().Execute().Count().ToString();
+            txtPopulateSqlLoremIpsum.Text = context.CreateQuery<MetricEntity>(Settings.MetricTableName).Where(entity => entity.PartitionKey == "PopulateSqlLoremIpsum").AsTableServiceQuery().Execute().Count().ToString();
+            txtPopulateCloud.Text = context.CreateQuery<MetricEntity>(Settings.MetricTableName).Where(entity => entity.PartitionKey == "PopulateCloud").AsTableServiceQuery().Execute().Count().ToString();
+            btnRefreshCounts.Enabled = true;
+
         }
     }
 }

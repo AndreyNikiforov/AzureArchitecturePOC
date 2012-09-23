@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Common;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -46,17 +47,6 @@ namespace Worker
             var entity = new MetricEntity(action, key, elapsed);
             context.AddObject(_tableName, entity);
             context.SaveChangesWithRetries(SaveChangesOptions.ReplaceOnUpdate);
-        }
-        public class MetricEntity : TableServiceEntity
-        {
-            public MetricEntity(string partition, string key, TimeSpan elapsed)
-            {
-                PartitionKey = partition;
-                RowKey = key;
-                ElapsedMilliseconds = elapsed.TotalMilliseconds;
-            }
-
-            public double ElapsedMilliseconds { get; set; }
         }
     }
 }

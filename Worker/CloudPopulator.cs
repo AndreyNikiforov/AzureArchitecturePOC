@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Common;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
 
@@ -19,7 +20,7 @@ namespace Worker
         private readonly IMetricRecorder _recorder;
 
         public CloudPopulator()
-            : this(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), "MetricTable"))
+            : this(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), Settings.MetricTableName))
         {
         }
 

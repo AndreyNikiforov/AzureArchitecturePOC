@@ -77,15 +77,15 @@ WHEN NOT MATCHED THEN INSERT (
                 var stopWatch = Stopwatch.StartNew();
                 _context.Database.ExecuteSqlCommand(
                     @"
-Update DataLoads 
+Update LoremIpsum 
 SET LoremIpsum = @loremIpsum
-where id in (select id from DataLoads with (nolock) where id between @startFrom and @startFrom + 10000);
+where id in (select id from LoremIpsum with (nolock) where id between @startFrom and @startFrom + 10000);
 ", new SqlParameter("@loremIpsum", loremIpsum), new SqlParameter("@startFrom", batch * 10000));
                 stopWatch.Stop();
 
                 //record metrics
 
-                _recorder.Report("PopulateLoremIpsum", batch.ToString(), stopWatch.Elapsed);
+                _recorder.Report("PopulateSqlLoremIpsum", batch.ToString(), stopWatch.Elapsed);
             }
 
         }

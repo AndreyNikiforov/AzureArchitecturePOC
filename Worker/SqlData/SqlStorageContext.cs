@@ -8,7 +8,7 @@ namespace Worker.SqlData
 {
     public class SqlStorageContext : DbContext
     {
-        public DbSet<DataLoad> DataLoads { get; set; }
+        public DbSet<DataLoad> LoremIpsum { get; set; }
 
         public SqlStorageContext(string connectionString) : base(connectionString) {}
 

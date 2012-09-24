@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CleanMessage.cs" />
+    <Compile Include="MeasureCloudMessage.cs" />
+    <Compile Include="MeasureSqlMessage.cs" />
     <Compile Include="MetricEntity.cs" />
     <Compile Include="PopulateCloudMessage.cs" />
     <Compile Include="MessageBase.cs" />

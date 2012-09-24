@@ -74,6 +74,24 @@ namespace Worker
                             new CloudPopulator().Populate(_cancel.Token, typedMsg.Partition);
                             Trace.TraceInformation("--------------- PopulateCloudMessage for partition {0} completed in {1}", typedMsg.Partition, stopWatch.Elapsed);
                         }
+                        else if (msg is MeasureCloudMessage)
+                        {
+                            _queue.DeleteMessage(receivedMessage);
+                            receivedMessage = null;
+                            Trace.TraceInformation("--------------- MeasureCloudMessage starting...");
+                            var stopWatch = Stopwatch.StartNew();
+                            new CloudPopulator().Measure(_cancel.Token);
+                            Trace.TraceInformation("--------------- MeasureCloudMessage completed in {0}", stopWatch.Elapsed);
+                        }
+                        else if (msg is MeasureSqlMessage)
+                        {
+                            _queue.DeleteMessage(receivedMessage);
+                            receivedMessage = null;
+                            Trace.TraceInformation("--------------- MeasureSqlMessage starting...");
+                            var stopWatch = Stopwatch.StartNew();
+                            new SqlPopulator().Measure(_cancel.Token);
+                            Trace.TraceInformation("--------------- MeasureSqlMessage completed in {0}", stopWatch.Elapsed);
+                        }
                         else
                             Trace.TraceError("Received message of unsupported type {0}. Swallowing", msg.GetType().FullName);
 

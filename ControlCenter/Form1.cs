@@ -112,5 +112,41 @@ namespace ControlCenter
             btnRefreshCounts.Enabled = true;
 
         }
+
+        private void btnMeasureSql_Click(object sender, EventArgs e)
+        {
+            btnMeasureSql.Enabled = false;
+            var connectionString = ConfigurationManager.AppSettings["CloudStore.ConnectionString"];
+            var account = CloudStorageAccount.Parse(connectionString);
+            var client = account.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(QueueName);
+            queue.CreateIfNotExist();
+
+            queue.AddMessage(
+                new CloudQueueMessage(
+                    MessageBase.Serialize(
+                        new MeasureSqlMessage()))
+                );
+            btnMeasureSql.Enabled = true;
+
+        }
+
+        private void btnMeasureCloud_Click(object sender, EventArgs e)
+        {
+            btnMeasureCloud.Enabled = false;
+            var connectionString = ConfigurationManager.AppSettings["CloudStore.ConnectionString"];
+            var account = CloudStorageAccount.Parse(connectionString);
+            var client = account.CreateCloudQueueClient();
+            var queue = client.GetQueueReference(QueueName);
+            queue.CreateIfNotExist();
+
+            queue.AddMessage(
+                new CloudQueueMessage(
+                    MessageBase.Serialize(
+                        new MeasureCloudMessage()))
+                );
+            btnMeasureCloud.Enabled = true;
+
+        }
     }
 }

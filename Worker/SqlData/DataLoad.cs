@@ -10,13 +10,14 @@ namespace Worker.SqlData
     /// <summary>
     /// This is EF code first for DataLoad table
     /// </summary>
+    [Table("LoremIpsum")]
     public class DataLoad
     {
         [Key]
         public int Id { get; set; }
 
         //This is to use as Clustered key
-        public DateTime Stamp { get; set; }
+        public Int32 Stamp { get; set; }
 
         public string LoremIpsum { get; set; }
     }

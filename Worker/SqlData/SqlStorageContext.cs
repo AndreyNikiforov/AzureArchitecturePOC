@@ -20,6 +20,7 @@ namespace Worker.SqlData
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            //modelBuilder.Entity<DataLoad>().MapSingle HasEntitySetName("LoremIpsum");
             base.OnModelCreating(modelBuilder);
         }
     }

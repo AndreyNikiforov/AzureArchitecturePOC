@@ -36,7 +36,7 @@ namespace Worker
 
         }
 
-        public TimeSpan Populate(CancellationToken cancel, int partition)
+        public void Populate(CancellationToken cancel, int partition)
         {
             const int loremIpsumBlobSize = 1000;
             //gerenerate lorem ipsum text
@@ -65,7 +65,6 @@ namespace Worker
                 elapsed += stopWatch.Elapsed;
             }
             _recorder.Report("PopulateCloud", partition.ToString(), elapsed);
-            return elapsed;
         }
 
         public void Initialize()
@@ -85,5 +84,30 @@ namespace Worker
                     Thread.Sleep(1000);
                 }
         }
+
+        public void Measure(CancellationToken cancel)
+        {
+            var context = _client.GetDataServiceContext();
+            var elapsed = TimeSpan.Zero;
+            var batchKey = Guid.NewGuid();
+            var rnd = new Random();
+            for (var batch = 0; batch < 100 && !cancel.IsCancellationRequested; batch++)
+            {
+                var id = rnd.Next(0, 10000000 - 1);
+                var partition = (id + 100000000).ToString().Trim().Substring(1,4).TrimStart('0');
+                var stopWatch = Stopwatch.StartNew();
+                var result = context
+                    .CreateQuery<DataEntity>(TableName)
+                    .Where(entity => entity.PartitionKey == partition && entity.RowKey == id.ToString())
+                    .AsTableServiceQuery()
+                    .Execute()
+                    .Single();
+                stopWatch.Stop();
+                elapsed += stopWatch.Elapsed;
+            }
+            _recorder.Report("MeasureCloud", batchKey.ToString(), elapsed);
+
+        }
+       
     }
 }

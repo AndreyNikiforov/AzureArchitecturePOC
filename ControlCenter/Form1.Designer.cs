@@ -39,6 +39,8 @@
             this.txtPopulateSqlLoremIpsum = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtPopulateCloud = new System.Windows.Forms.TextBox();
+            this.btnMeasureSql = new System.Windows.Forms.Button();
+            this.btnMeasureCloud = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnPopulateSql
@@ -81,9 +83,9 @@
             this.btnReset.UseVisualStyleBackColor = true;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
-            // button1
+            // btnRefreshCounts
             // 
-            this.btnRefreshCounts.Location = new System.Drawing.Point(12, 235);
+            this.btnRefreshCounts.Location = new System.Drawing.Point(13, 235);
             this.btnRefreshCounts.Name = "btnRefreshCounts";
             this.btnRefreshCounts.Size = new System.Drawing.Size(192, 23);
             this.btnRefreshCounts.TabIndex = 6;
@@ -94,7 +96,7 @@
             // txtPopulateSql
             // 
             this.txtPopulateSql.Enabled = false;
-            this.txtPopulateSql.Location = new System.Drawing.Point(104, 99);
+            this.txtPopulateSql.Location = new System.Drawing.Point(104, 157);
             this.txtPopulateSql.Name = "txtPopulateSql";
             this.txtPopulateSql.Size = new System.Drawing.Size(100, 20);
             this.txtPopulateSql.TabIndex = 7;
@@ -102,7 +104,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 103);
+            this.label1.Location = new System.Drawing.Point(12, 161);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(64, 13);
             this.label1.TabIndex = 8;
@@ -111,7 +113,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 129);
+            this.label2.Location = new System.Drawing.Point(12, 187);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 10;
@@ -120,7 +122,7 @@
             // txtPopulateSqlLoremIpsum
             // 
             this.txtPopulateSqlLoremIpsum.Enabled = false;
-            this.txtPopulateSqlLoremIpsum.Location = new System.Drawing.Point(104, 125);
+            this.txtPopulateSqlLoremIpsum.Location = new System.Drawing.Point(104, 183);
             this.txtPopulateSqlLoremIpsum.Name = "txtPopulateSqlLoremIpsum";
             this.txtPopulateSqlLoremIpsum.Size = new System.Drawing.Size(100, 20);
             this.txtPopulateSqlLoremIpsum.TabIndex = 9;
@@ -128,7 +130,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 155);
+            this.label3.Location = new System.Drawing.Point(12, 213);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 12;
@@ -137,16 +139,38 @@
             // txtPopulateCloud
             // 
             this.txtPopulateCloud.Enabled = false;
-            this.txtPopulateCloud.Location = new System.Drawing.Point(104, 151);
+            this.txtPopulateCloud.Location = new System.Drawing.Point(104, 209);
             this.txtPopulateCloud.Name = "txtPopulateCloud";
             this.txtPopulateCloud.Size = new System.Drawing.Size(100, 20);
             this.txtPopulateCloud.TabIndex = 11;
+            // 
+            // button1
+            // 
+            this.btnMeasureSql.Location = new System.Drawing.Point(13, 99);
+            this.btnMeasureSql.Name = "btnMeasureSql";
+            this.btnMeasureSql.Size = new System.Drawing.Size(192, 23);
+            this.btnMeasureSql.TabIndex = 13;
+            this.btnMeasureSql.Text = "Request Sql Measure";
+            this.btnMeasureSql.UseVisualStyleBackColor = true;
+            this.btnMeasureSql.Click += new System.EventHandler(this.btnMeasureSql_Click);
+            // 
+            // button2
+            // 
+            this.btnMeasureCloud.Location = new System.Drawing.Point(223, 99);
+            this.btnMeasureCloud.Name = "btnMeasureCloud";
+            this.btnMeasureCloud.Size = new System.Drawing.Size(192, 23);
+            this.btnMeasureCloud.TabIndex = 14;
+            this.btnMeasureCloud.Text = "Request Cloud Measure";
+            this.btnMeasureCloud.UseVisualStyleBackColor = true;
+            this.btnMeasureCloud.Click += new System.EventHandler(this.btnMeasureCloud_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(488, 330);
+            this.Controls.Add(this.btnMeasureCloud);
+            this.Controls.Add(this.btnMeasureSql);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtPopulateCloud);
             this.Controls.Add(this.label2);
@@ -178,6 +202,8 @@
         private System.Windows.Forms.TextBox txtPopulateSqlLoremIpsum;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtPopulateCloud;
+        private System.Windows.Forms.Button btnMeasureSql;
+        private System.Windows.Forms.Button btnMeasureCloud;
     }
 }
 

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Common;
 using Microsoft.WindowsAzure;
 using Worker.SqlData;
@@ -175,21 +176,30 @@ insert into Ids (id)
         }
         public void Measure(CancellationToken cancel)
         {
-            var elapsed = TimeSpan.Zero;
             var batchKey = Guid.NewGuid();
             var rnd = new Random();
-            for (var batch = 0; batch < 100 && !cancel.IsCancellationRequested; batch++)
-            {
-                var id = rnd.Next(0, 10000000 - 1);
-                var stopWatch = Stopwatch.StartNew();
-                var result = _context.LoremIpsum.Find(id);
-                //_context.Database.SqlQuery<DataLoad>("select * from LoremIpsum where id = @id",
-                //                                       new SqlParameter("@id", id)).Single();
-                stopWatch.Stop();
-                elapsed += stopWatch.Elapsed;
-            }
-            _recorder.Report("MeasureSql", batchKey.ToString(), elapsed);
+            var tasks = Enumerable
+                .Range(0, 100)
+                .Select((i) => Task<TimeSpan>.Factory.StartNew(() =>
+                    {
+                        var context =
+                            new SqlStorageContext(CloudConfigurationManager.GetSetting("SqlStore.ConnectionString"));
+                        var id = rnd.Next(0, 10000000 - 1);
+                        var stopWatch = Stopwatch.StartNew();
+                        var result = context.LoremIpsum.Find(id);
+                        return stopWatch.Elapsed;
+                    },
+                                                               cancel))
+                ;
+            Task.WaitAll(tasks.ToArray(), cancel);
 
+            _recorder.Report(
+                "MeasureSql",
+                batchKey.ToString(),
+                tasks.Aggregate(
+                    TimeSpan.Zero,
+                    (elapsed, task) => elapsed.Add(task.Result)
+                    ));
         }
     }
 }

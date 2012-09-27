@@ -6,9 +6,11 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Common;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
+using Worker.SqlData;
 
 namespace Worker
 {
@@ -20,7 +22,10 @@ namespace Worker
         private readonly IMetricRecorder _recorder;
 
         public CloudPopulator()
-            : this(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"), Settings.MetricTableName))
+            : this(
+                CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"),
+                new MetricRecorder(CloudConfigurationManager.GetSetting("CloudStore.ConnectionString"),
+                                   Settings.MetricTableName))
         {
         }
 
@@ -87,27 +92,37 @@ namespace Worker
 
         public void Measure(CancellationToken cancel)
         {
-            var context = _client.GetDataServiceContext();
-            var elapsed = TimeSpan.Zero;
             var batchKey = Guid.NewGuid();
             var rnd = new Random();
-            for (var batch = 0; batch < 100 && !cancel.IsCancellationRequested; batch++)
-            {
-                var id = rnd.Next(0, 10000000 - 1);
-                var partition = (id + 100000000).ToString().Trim().Substring(1,4).TrimStart('0');
-                var stopWatch = Stopwatch.StartNew();
-                var result = context
-                    .CreateQuery<DataEntity>(TableName)
-                    .Where(entity => entity.PartitionKey == partition && entity.RowKey == id.ToString())
-                    .AsTableServiceQuery()
-                    .Execute()
-                    .Single();
-                stopWatch.Stop();
-                elapsed += stopWatch.Elapsed;
-            }
-            _recorder.Report("MeasureCloud", batchKey.ToString(), elapsed);
+            var tasks = Enumerable
+                .Range(0, 100)
+                .Select((i) => Task<TimeSpan>.Factory.StartNew(() =>
+                    {
+                        var context = _client.GetDataServiceContext();
+                        context.IgnoreResourceNotFoundException = true;
+                        var id = rnd.Next(0, 10000000 - 1);
+                        var partition = (id + 100000000).ToString().Trim().Substring(1, 4).TrimStart('0');
+                        var stopWatch = Stopwatch.StartNew();
+                        var result = context
+                            .CreateQuery<DataEntity>(TableName)
+                            .Where(entity => entity.PartitionKey == partition && entity.RowKey == id.ToString())
+                            .AsTableServiceQuery()
+                            .Execute()
+                            .FirstOrDefault();
+                        return stopWatch.Elapsed;
+                    },
+                                                               cancel))
+                ;
+            Task.WaitAll(tasks.ToArray(), cancel);
 
+            _recorder.Report(
+                "MeasureCloud",
+                batchKey.ToString(),
+                tasks.Aggregate(
+                    TimeSpan.Zero,
+                    (elapsed, task) => elapsed.Add(task.Result)
+                    ));
         }
-       
+
     }
 }
